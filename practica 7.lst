@@ -1,0 +1,1778 @@
+CCS PCH C Compiler, Version 4.032, 62930               08-abr.-14 19:24
+
+               Filename: C:\Users\Diego Armando\Documents\GitHub\Practica-7-Sistemas-embebidos\practica 7.lst
+
+               ROM used: 3900 bytes (12%)
+                         Largest free fragment is 28864
+               RAM used: 83 (5%) at main() level
+                         115 (7%) worst case
+               Stack:    6 worst case (5 in main + 1 for interrupts)
+
+*
+0000:  GOTO   0CE8
+*
+0008:  MOVWF  05
+000A:  MOVFF  FD8,06
+000E:  MOVFF  FE0,07
+0012:  MOVLB  0
+0014:  MOVFF  FE9,0D
+0018:  MOVFF  FEA,08
+001C:  MOVFF  FE1,09
+0020:  MOVFF  FE2,0A
+0024:  MOVFF  FD9,0B
+0028:  MOVFF  FDA,0C
+002C:  MOVFF  FF3,14
+0030:  MOVFF  FF4,15
+0034:  MOVFF  FFA,16
+0038:  MOVFF  00,0F
+003C:  MOVFF  01,10
+0040:  MOVFF  02,11
+0044:  MOVFF  03,12
+0048:  MOVFF  04,13
+004C:  BTFSS  FF2.5
+004E:  GOTO   0058
+0052:  BTFSC  FF2.2
+0054:  GOTO   0410
+0058:  BTFSS  F9D.5
+005A:  GOTO   0064
+005E:  BTFSC  F9E.5
+0060:  GOTO   03BE
+0064:  MOVFF  0F,00
+0068:  MOVFF  10,01
+006C:  MOVFF  11,02
+0070:  MOVFF  12,03
+0074:  MOVFF  13,04
+0078:  BSF    0E.7
+007A:  MOVFF  0D,FE9
+007E:  MOVFF  08,FEA
+0082:  MOVFF  09,FE1
+0086:  MOVFF  0A,FE2
+008A:  MOVFF  0B,FD9
+008E:  MOVFF  0C,FDA
+0092:  MOVFF  14,FF3
+0096:  MOVFF  15,FF4
+009A:  MOVFF  16,FFA
+009E:  MOVF   05,W
+00A0:  MOVFF  07,FE0
+00A4:  MOVFF  06,FD8
+00A8:  RETFIE 0
+.................... #include <18f4520.h> 
+.................... //////// Standard Header file for the PIC18F4520 device //////////////// 
+.................... #device PIC18F4520 
+.................... #list 
+....................  
+.................... #fuses XT, NOWDT, PUT, NODEBUG, NOBROWNOUT, NOPROTECT, NOLVP, NOWRT 
+.................... #use delay(clock=4000000) 
+.................... #include<ds1307.c> 
+.................... ////////////////////////////////////////////////////////////////////////////////  
+.................... ///                               DS1307.C                                   ///  
+.................... ///                     Driver for Real Time Clock                           ///  
+.................... ///                                                                          ///  
+.................... /// ds1307_init() - Enable oscillator without clearing the seconds register -///  
+.................... ///                 used when PIC loses power and DS1307 run from 3V BAT     ///  
+.................... ///               - Disable squarewave output                                ///  
+.................... ///                                                                          ///  
+.................... /// setTime(day,mth,year,dow,hour,min,sec)  Set the date/time   ///  
+.................... ///                                                                          ///  
+.................... /// getDate(day,mth,year,dow)               Get the date             ///  
+.................... ///                                                                          ///  
+.................... /// getTime(hr,min,sec)                     Get the time             ///  
+.................... ///                                                                          ///  
+.................... ////////////////////////////////////////////////////////////////////////////////  
+....................  
+.................... #define RTC_SDA  PIN_C4  
+.................... #define RTC_SCL  PIN_C3  
+....................  
+.................... #use i2c(master, sda=RTC_SDA, scl=RTC_SCL)  
+*
+0446:  MOVLW  08
+0448:  MOVWF  01
+044A:  NOP   
+044C:  BCF    F8B.3
+044E:  BCF    F94.3
+0450:  NOP   
+0452:  RLCF   69,F
+0454:  BCF    F8B.4
+0456:  BTFSC  FD8.0
+0458:  BSF    F94.4
+045A:  BTFSS  FD8.0
+045C:  BCF    F94.4
+045E:  BSF    F94.3
+0460:  BTFSS  F82.3
+0462:  BRA    0460
+0464:  DECFSZ 01,F
+0466:  BRA    044A
+0468:  NOP   
+046A:  BCF    F8B.3
+046C:  BCF    F94.3
+046E:  NOP   
+0470:  BSF    F94.4
+0472:  NOP   
+0474:  NOP   
+0476:  BSF    F94.3
+0478:  BTFSS  F82.3
+047A:  BRA    0478
+047C:  CLRF   01
+047E:  NOP   
+0480:  BTFSC  F82.4
+0482:  BSF    01.0
+0484:  BCF    F8B.3
+0486:  BCF    F94.3
+0488:  BCF    F8B.4
+048A:  BCF    F94.4
+048C:  RETLW  00
+*
+0C7C:  MOVLW  08
+0C7E:  MOVWF  58
+0C80:  MOVFF  00,59
+0C84:  BSF    F94.4
+0C86:  NOP   
+0C88:  BSF    F94.3
+0C8A:  BTFSS  F82.3
+0C8C:  BRA    0C8A
+0C8E:  BTFSC  F82.4
+0C90:  BSF    FD8.0
+0C92:  BTFSS  F82.4
+0C94:  BCF    FD8.0
+0C96:  RLCF   01,F
+0C98:  NOP   
+0C9A:  BCF    F94.3
+0C9C:  BCF    F8B.3
+0C9E:  DECFSZ 58,F
+0CA0:  BRA    0C84
+0CA2:  BSF    F94.4
+0CA4:  NOP   
+0CA6:  BCF    F8B.4
+0CA8:  MOVF   59,W
+0CAA:  BTFSS  FD8.2
+0CAC:  BCF    F94.4
+0CAE:  NOP   
+0CB0:  BSF    F94.3
+0CB2:  BTFSS  F82.3
+0CB4:  BRA    0CB2
+0CB6:  NOP   
+0CB8:  BCF    F8B.3
+0CBA:  BCF    F94.3
+0CBC:  NOP   
+0CBE:  BCF    F8B.4
+0CC0:  BCF    F94.4
+0CC2:  RETLW  00
+....................  
+.................... int bin2bcd(int);  
+.................... int bcd2bin(int);  
+....................  
+.................... void init(void)  
+.................... {  
+....................    int seconds = 0;  
+....................  
+....................    i2c_start();  
+....................    i2c_write(0xD0);      // WR to RTC  
+....................    i2c_write(0x00);      // REG 0  
+....................    i2c_start();  
+....................    i2c_write(0xD1);      // RD from RTC  
+....................    seconds = bcd2bin(i2c_read(0)); // Read current "seconds" in DS1307  
+....................    i2c_stop();  
+....................    seconds &= 0x7F;  
+....................  
+....................    delay_us(3);  
+....................  
+....................    i2c_start();  
+....................    i2c_write(0xD0);      // WR to RTC  
+....................    i2c_write(0x00);      // REG 0  
+....................    i2c_write(bin2bcd(seconds));     // Start oscillator with current "seconds value  
+....................    i2c_start();  
+....................    i2c_write(0xD0);      // WR to RTC  
+....................    i2c_write(0x07);      // Control Register  
+....................    i2c_write(0x80);     // Disable squarewave output pin  
+....................    i2c_stop();  
+....................  
+.................... }  
+....................  
+.................... void setTime(int day, int mth, int year, int dow, int hr, int min, int sec)  
+.................... {  
+....................   sec &= 0x7F;  
+*
+04E4:  BCF    67.7
+....................   hr &= 0x3F;  
+04E6:  MOVLW  3F
+04E8:  ANDWF  65,F
+....................  
+....................   i2c_start();  
+04EA:  BSF    F94.4
+04EC:  NOP   
+04EE:  BSF    F94.3
+04F0:  NOP   
+04F2:  BCF    F8B.4
+04F4:  BCF    F94.4
+04F6:  NOP   
+04F8:  BCF    F8B.3
+04FA:  BCF    F94.3
+....................   i2c_write(0xD0);            // I2C write address  
+04FC:  MOVLW  D0
+04FE:  MOVWF  69
+0500:  RCALL  0446
+....................   i2c_write(0x00);            // Start at REG 0 - Seconds  
+0502:  CLRF   69
+0504:  RCALL  0446
+....................   i2c_write(bin2bcd(sec));      // REG 0  
+0506:  MOVFF  67,68
+050A:  RCALL  04B6
+050C:  MOVFF  01,68
+0510:  MOVFF  01,69
+0514:  RCALL  0446
+....................   i2c_write(bin2bcd(min));      // REG 1  
+0516:  MOVFF  66,68
+051A:  RCALL  04B6
+051C:  MOVFF  01,68
+0520:  MOVFF  01,69
+0524:  RCALL  0446
+....................   i2c_write(bin2bcd(hr));      // REG 2  
+0526:  MOVFF  65,68
+052A:  RCALL  04B6
+052C:  MOVFF  01,68
+0530:  MOVFF  01,69
+0534:  RCALL  0446
+....................   i2c_write(bin2bcd(dow));      // REG 3  
+0536:  MOVFF  64,68
+053A:  RCALL  04B6
+053C:  MOVFF  01,68
+0540:  MOVFF  01,69
+0544:  RCALL  0446
+....................   i2c_write(bin2bcd(day));      // REG 4  
+0546:  MOVFF  61,68
+054A:  RCALL  04B6
+054C:  MOVFF  01,68
+0550:  MOVFF  01,69
+0554:  RCALL  0446
+....................   i2c_write(bin2bcd(mth));      // REG 5  
+0556:  MOVFF  62,68
+055A:  RCALL  04B6
+055C:  MOVFF  01,68
+0560:  MOVFF  01,69
+0564:  RCALL  0446
+....................   i2c_write(bin2bcd(year));      // REG 6  
+0566:  MOVFF  63,68
+056A:  RCALL  04B6
+056C:  MOVFF  01,68
+0570:  MOVFF  01,69
+0574:  RCALL  0446
+....................   i2c_write(0x80);            // REG 7 - Disable squarewave output pin  
+0576:  MOVLW  80
+0578:  MOVWF  69
+057A:  RCALL  0446
+....................   i2c_stop();  
+057C:  BCF    F94.4
+057E:  NOP   
+0580:  BSF    F94.3
+0582:  BTFSS  F82.3
+0584:  BRA    0582
+0586:  NOP   
+0588:  BRA    058A
+058A:  NOP   
+058C:  BSF    F94.4
+058E:  NOP   
+.................... }  
+0590:  RETLW  00
+....................  
+.................... void getDate(int &day, int &mth, int &year, int &dow)  
+.................... {  
+....................   i2c_start();  
+*
+0D3C:  BSF    F94.4
+0D3E:  NOP   
+0D40:  BSF    F94.3
+0D42:  NOP   
+0D44:  BCF    F8B.4
+0D46:  BCF    F94.4
+0D48:  NOP   
+0D4A:  BCF    F8B.3
+0D4C:  BCF    F94.3
+....................   i2c_write(0xD0);  
+0D4E:  MOVLW  D0
+0D50:  MOVWF  69
+0D52:  CALL   0446
+....................   i2c_write(0x03);            // Start at REG 3 - Day of week  
+0D56:  MOVLW  03
+0D58:  MOVWF  69
+0D5A:  CALL   0446
+....................   i2c_start();  
+0D5E:  BSF    F94.4
+0D60:  NOP   
+0D62:  BSF    F94.3
+0D64:  NOP   
+0D66:  BTFSS  F82.3
+0D68:  BRA    0D66
+0D6A:  BCF    F8B.4
+0D6C:  BCF    F94.4
+0D6E:  NOP   
+0D70:  BCF    F8B.3
+0D72:  BCF    F94.3
+....................   i2c_write(0xD1);  
+0D74:  MOVLW  D1
+0D76:  MOVWF  69
+0D78:  CALL   0446
+....................   dow  = bcd2bin(i2c_read() & 0x7f);   // REG 3  
+0D7C:  MOVLW  01
+0D7E:  MOVWF  00
+0D80:  RCALL  0C7C
+0D82:  MOVF   01,W
+0D84:  ANDLW  7F
+0D86:  MOVWF  54
+0D88:  MOVWF  59
+0D8A:  RCALL  0CC4
+0D8C:  MOVFF  01,1F
+....................   day  = bcd2bin(i2c_read() & 0x3f);   // REG 4  
+0D90:  MOVLW  01
+0D92:  MOVWF  00
+0D94:  RCALL  0C7C
+0D96:  MOVF   01,W
+0D98:  ANDLW  3F
+0D9A:  MOVWF  54
+0D9C:  MOVWF  59
+0D9E:  RCALL  0CC4
+0DA0:  MOVFF  01,1C
+....................   mth  = bcd2bin(i2c_read() & 0x1f);   // REG 5  
+0DA4:  MOVLW  01
+0DA6:  MOVWF  00
+0DA8:  RCALL  0C7C
+0DAA:  MOVF   01,W
+0DAC:  ANDLW  1F
+0DAE:  MOVWF  54
+0DB0:  MOVWF  59
+0DB2:  RCALL  0CC4
+0DB4:  MOVFF  01,1D
+....................   year = bcd2bin(i2c_read(0));            // REG 6  
+0DB8:  CLRF   00
+0DBA:  RCALL  0C7C
+0DBC:  MOVFF  01,53
+0DC0:  MOVFF  01,59
+0DC4:  RCALL  0CC4
+0DC6:  MOVFF  01,1E
+....................   i2c_stop();  
+0DCA:  BCF    F94.4
+0DCC:  NOP   
+0DCE:  BSF    F94.3
+0DD0:  BTFSS  F82.3
+0DD2:  BRA    0DD0
+0DD4:  NOP   
+0DD6:  BRA    0DD8
+0DD8:  NOP   
+0DDA:  BSF    F94.4
+0DDC:  NOP   
+.................... }  
+....................  
+.................... void getTime(int &hr, int &min, int &sec)  
+.................... {  
+....................   i2c_start();  
+0DDE:  BSF    F94.4
+0DE0:  NOP   
+0DE2:  BSF    F94.3
+0DE4:  NOP   
+0DE6:  BCF    F8B.4
+0DE8:  BCF    F94.4
+0DEA:  NOP   
+0DEC:  BCF    F8B.3
+0DEE:  BCF    F94.3
+....................   i2c_write(0xD0);  
+0DF0:  MOVLW  D0
+0DF2:  MOVWF  69
+0DF4:  CALL   0446
+....................   i2c_write(0x00);            // Start at REG 0 - Seconds  
+0DF8:  CLRF   69
+0DFA:  CALL   0446
+....................   i2c_start();  
+0DFE:  BSF    F94.4
+0E00:  NOP   
+0E02:  BSF    F94.3
+0E04:  NOP   
+0E06:  BTFSS  F82.3
+0E08:  BRA    0E06
+0E0A:  BCF    F8B.4
+0E0C:  BCF    F94.4
+0E0E:  NOP   
+0E10:  BCF    F8B.3
+0E12:  BCF    F94.3
+....................   i2c_write(0xD1);  
+0E14:  MOVLW  D1
+0E16:  MOVWF  69
+0E18:  CALL   0446
+....................   sec = bcd2bin(i2c_read() & 0x7f);  
+0E1C:  MOVLW  01
+0E1E:  MOVWF  00
+0E20:  RCALL  0C7C
+0E22:  MOVF   01,W
+0E24:  ANDLW  7F
+0E26:  MOVWF  54
+0E28:  MOVWF  59
+0E2A:  RCALL  0CC4
+0E2C:  MOVFF  01,19
+....................   min = bcd2bin(i2c_read() & 0x7f);  
+0E30:  MOVLW  01
+0E32:  MOVWF  00
+0E34:  RCALL  0C7C
+0E36:  MOVF   01,W
+0E38:  ANDLW  7F
+0E3A:  MOVWF  54
+0E3C:  MOVWF  59
+0E3E:  RCALL  0CC4
+0E40:  MOVFF  01,1A
+....................   hr  = bcd2bin(i2c_read(0) & 0x3f);  
+0E44:  CLRF   00
+0E46:  RCALL  0C7C
+0E48:  MOVF   01,W
+0E4A:  ANDLW  3F
+0E4C:  MOVWF  54
+0E4E:  MOVWF  59
+0E50:  RCALL  0CC4
+0E52:  MOVFF  01,1B
+....................   i2c_stop();  
+0E56:  BCF    F94.4
+0E58:  NOP   
+0E5A:  BSF    F94.3
+0E5C:  BTFSS  F82.3
+0E5E:  BRA    0E5C
+0E60:  NOP   
+0E62:  BRA    0E64
+0E64:  NOP   
+0E66:  BSF    F94.4
+0E68:  NOP   
+....................  
+.................... }  
+....................  
+.................... int bin2bcd(int binary_value)  
+.................... {  
+....................    int decena; 
+....................    int unidad; 
+....................    int bdc = 0; 
+*
+04B6:  CLRF   6B
+....................    decena = binary_value/10; 
+04B8:  MOVFF  68,6C
+04BC:  MOVLW  0A
+04BE:  MOVWF  6D
+04C0:  RCALL  048E
+04C2:  MOVFF  01,69
+....................    unidad = binary_value - (decena*10); 
+04C6:  MOVF   69,W
+04C8:  MULLW  0A
+04CA:  MOVF   FF3,W
+04CC:  SUBWF  68,W
+04CE:  MOVWF  6A
+....................    bdc=decena; 
+04D0:  MOVFF  69,6B
+....................    bdc<<=4; 
+04D4:  SWAPF  6B,F
+04D6:  MOVLW  F0
+04D8:  ANDWF  6B,F
+....................    bdc = bdc | unidad; 
+04DA:  MOVF   6A,W
+04DC:  IORWF  6B,F
+....................    return bdc; 
+04DE:  MOVFF  6B,01
+....................     
+.................... }  
+04E2:  RETLW  00
+....................  
+....................  
+.................... // Input range - 00 to 99.  
+.................... int bcd2bin(int bcd)  
+.................... {  
+....................    int decena; 
+....................    int unidad; 
+....................    int binary; 
+....................     
+....................    decena = bcd; 
+*
+0CC4:  MOVFF  59,5A
+....................    decena >>=4; 
+0CC8:  SWAPF  5A,F
+0CCA:  MOVLW  0F
+0CCC:  ANDWF  5A,F
+....................    decena = decena * 10; 
+0CCE:  MOVF   5A,W
+0CD0:  MULLW  0A
+0CD2:  MOVFF  FF3,5A
+....................     
+....................    unidad = bcd & 0x0f; 
+0CD6:  MOVF   59,W
+0CD8:  ANDLW  0F
+0CDA:  MOVWF  5B
+....................     
+....................    binary = unidad + decena; 
+0CDC:  MOVF   5A,W
+0CDE:  ADDWF  5B,W
+0CE0:  MOVWF  5C
+....................    return binary; 
+0CE2:  MOVFF  5C,01
+.................... }  
+0CE6:  RETLW  00
+....................  
+.................... #use rs232(baud=9600, bits = 8 , parity = N ,xmit=PIN_C6,rcv=PIN_C7) 
+....................  
+....................  
+.................... int timer=0; 
+.................... int segundos=0;  
+.................... int minutos=0;  
+.................... int horas=0;  
+.................... int dias=0;  
+.................... int mes=0;  
+.................... int year=0;  
+.................... int dow=0; 
+....................  
+.................... char dataRecived[50]; 
+.................... int index = 0; 
+....................  
+....................  
+....................  
+....................  
+.................... void analizarTrama(); 
+.................... void analyzeTokens(); 
+.................... void limpiarTrama(); 
+.................... boolean isValidNumber(char); 
+.................... int charToInt(char); 
+....................  
+.................... #int_rda 
+.................... void isr_rda() 
+.................... { 
+....................    char buffer; 
+....................    //Hay datos pendientes ?? 
+....................    if(kbhit()) 
+*
+03BE:  BTFSS  F9E.5
+03C0:  BRA    040A
+....................    { 
+....................       //Si es el backspace borramos la trama  
+....................       int asciiKEY; 
+....................       buffer= getc(); 
+03C2:  BTFSS  F9E.5
+03C4:  BRA    03C2
+03C6:  MOVFF  FAE,6F
+....................       asciiKEY = buffer; 
+03CA:  MOVFF  6F,70
+....................       if(asciiKEY == 8) 
+03CE:  MOVF   70,W
+03D0:  SUBLW  08
+03D2:  BNZ   03EE
+....................       { 
+....................          if(index>0) 
+03D4:  MOVF   52,F
+03D6:  BZ    03EC
+....................          { 
+....................             dataRecived[index] = ' '; 
+03D8:  CLRF   03
+03DA:  MOVF   52,W
+03DC:  ADDLW  20
+03DE:  MOVWF  FE9
+03E0:  MOVLW  00
+03E2:  ADDWFC 03,W
+03E4:  MOVWF  FEA
+03E6:  MOVLW  20
+03E8:  MOVWF  FEF
+....................             index--; 
+03EA:  DECF   52,F
+....................          } 
+....................       } 
+....................       else 
+03EC:  BRA    040A
+....................       { 
+....................          if(index>50)index=0; 
+03EE:  MOVF   52,W
+03F0:  SUBLW  32
+03F2:  BTFSS  FD8.0
+03F4:  CLRF   52
+....................           
+....................          dataRecived[index] = buffer; 
+03F6:  CLRF   03
+03F8:  MOVF   52,W
+03FA:  ADDLW  20
+03FC:  MOVWF  FE9
+03FE:  MOVLW  00
+0400:  ADDWFC 03,W
+0402:  MOVWF  FEA
+0404:  MOVFF  6F,FEF
+....................          index++; 
+0408:  INCF   52,F
+....................       } 
+....................   
+....................    } 
+.................... } 
+....................  
+040A:  BCF    F9E.5
+040C:  GOTO   0064
+.................... #int_timer0 
+.................... void timer0() 
+.................... { 
+....................    timer=true; 
+0410:  MOVLW  01
+0412:  MOVWF  18
+.................... } 
+....................  
+0414:  BCF    FF2.2
+0416:  GOTO   0064
+.................... int test(int bcd)  
+.................... {  
+....................    int decena; 
+....................    int unidad; 
+....................    int binary; 
+....................     
+....................    decena = bcd; 
+....................    decena >>=4; 
+....................    decena = decena * 10; 
+....................     
+....................    unidad = bcd & 0x0f; 
+....................     
+....................    binary = unidad + decena; 
+....................    return binary; 
+....................     
+.................... }  
+....................  
+.................... void main(void) 
+.................... { 
+*
+0CE8:  CLRF   FF8
+0CEA:  BCF    FD0.7
+0CEC:  BSF    0D.7
+0CEE:  CLRF   FEA
+0CF0:  CLRF   FE9
+0CF2:  BCF    FB8.3
+0CF4:  MOVLW  19
+0CF6:  MOVWF  FAF
+0CF8:  MOVLW  A6
+0CFA:  MOVWF  FAC
+0CFC:  MOVLW  90
+0CFE:  MOVWF  FAB
+0D00:  MOVF   FC1,W
+0D02:  ANDLW  C0
+0D04:  IORLW  0F
+0D06:  MOVWF  FC1
+0D08:  MOVLW  07
+0D0A:  MOVWF  FB4
+0D0C:  CLRF   18
+0D0E:  CLRF   19
+0D10:  CLRF   1A
+0D12:  CLRF   1B
+0D14:  CLRF   1C
+0D16:  CLRF   1D
+0D18:  CLRF   1E
+0D1A:  CLRF   1F
+0D1C:  CLRF   52
+....................    enable_interrupts(global); 
+0D1E:  MOVLW  C0
+0D20:  IORWF  FF2,F
+....................    enable_interrupts(int_rb); 
+0D22:  BSF    FF2.3
+....................    enable_interrupts(int_rda); 
+0D24:  BSF    F9D.5
+....................    enable_interrupts(INT_TIMER0); 
+0D26:  BSF    FF2.5
+....................    setup_timer_0(RTCC_INTERNAL|RTCC_DIV_16); 
+0D28:  MOVLW  83
+0D2A:  MOVWF  FD5
+....................    set_timer0(3036); 
+0D2C:  MOVLW  0B
+0D2E:  MOVWF  FD7
+0D30:  MOVLW  DC
+0D32:  MOVWF  FD6
+....................  
+....................    while(true) 
+....................    { 
+....................       analizarTrama(); 
+0D34:  BRA    0C2E
+....................       if(timer) 
+0D36:  MOVF   18,F
+0D38:  BTFSC  FD8.2
+0D3A:  BRA    0F3C
+....................       { 
+....................          getDate(dias,mes,year,dow); 
+....................          getTime(horas,minutos,segundos); 
+....................          printf("%i / %i / %i \r", dias , mes , year); 
+*
+0E6A:  MOVFF  1C,62
+0E6E:  MOVLW  1F
+0E70:  MOVWF  63
+0E72:  CALL   0592
+0E76:  MOVLW  20
+0E78:  BTFSS  F9E.4
+0E7A:  BRA    0E78
+0E7C:  MOVWF  FAD
+0E7E:  MOVLW  2F
+0E80:  BTFSS  F9E.4
+0E82:  BRA    0E80
+0E84:  MOVWF  FAD
+0E86:  MOVLW  20
+0E88:  BTFSS  F9E.4
+0E8A:  BRA    0E88
+0E8C:  MOVWF  FAD
+0E8E:  MOVFF  1D,62
+0E92:  MOVLW  1F
+0E94:  MOVWF  63
+0E96:  CALL   0592
+0E9A:  MOVLW  20
+0E9C:  BTFSS  F9E.4
+0E9E:  BRA    0E9C
+0EA0:  MOVWF  FAD
+0EA2:  MOVLW  2F
+0EA4:  BTFSS  F9E.4
+0EA6:  BRA    0EA4
+0EA8:  MOVWF  FAD
+0EAA:  MOVLW  20
+0EAC:  BTFSS  F9E.4
+0EAE:  BRA    0EAC
+0EB0:  MOVWF  FAD
+0EB2:  MOVFF  1E,62
+0EB6:  MOVLW  1F
+0EB8:  MOVWF  63
+0EBA:  CALL   0592
+0EBE:  MOVLW  20
+0EC0:  BTFSS  F9E.4
+0EC2:  BRA    0EC0
+0EC4:  MOVWF  FAD
+0EC6:  MOVLW  0D
+0EC8:  BTFSS  F9E.4
+0ECA:  BRA    0EC8
+0ECC:  MOVWF  FAD
+....................          printf("%i : %i : %i \r\r" , horas , minutos ,segundos); 
+0ECE:  MOVFF  1B,62
+0ED2:  MOVLW  1F
+0ED4:  MOVWF  63
+0ED6:  CALL   0592
+0EDA:  MOVLW  20
+0EDC:  BTFSS  F9E.4
+0EDE:  BRA    0EDC
+0EE0:  MOVWF  FAD
+0EE2:  MOVLW  3A
+0EE4:  BTFSS  F9E.4
+0EE6:  BRA    0EE4
+0EE8:  MOVWF  FAD
+0EEA:  MOVLW  20
+0EEC:  BTFSS  F9E.4
+0EEE:  BRA    0EEC
+0EF0:  MOVWF  FAD
+0EF2:  MOVFF  1A,62
+0EF6:  MOVLW  1F
+0EF8:  MOVWF  63
+0EFA:  CALL   0592
+0EFE:  MOVLW  20
+0F00:  BTFSS  F9E.4
+0F02:  BRA    0F00
+0F04:  MOVWF  FAD
+0F06:  MOVLW  3A
+0F08:  BTFSS  F9E.4
+0F0A:  BRA    0F08
+0F0C:  MOVWF  FAD
+0F0E:  MOVLW  20
+0F10:  BTFSS  F9E.4
+0F12:  BRA    0F10
+0F14:  MOVWF  FAD
+0F16:  MOVFF  19,62
+0F1A:  MOVLW  1F
+0F1C:  MOVWF  63
+0F1E:  CALL   0592
+0F22:  MOVLW  20
+0F24:  BTFSS  F9E.4
+0F26:  BRA    0F24
+0F28:  MOVWF  FAD
+0F2A:  MOVLW  0D
+0F2C:  BTFSS  F9E.4
+0F2E:  BRA    0F2C
+0F30:  MOVWF  FAD
+0F32:  MOVLW  0D
+0F34:  BTFSS  F9E.4
+0F36:  BRA    0F34
+0F38:  MOVWF  FAD
+....................          timer=false; 
+0F3A:  CLRF   18
+....................       } 
+....................    } 
+0F3C:  BRA    0D34
+.................... } 
+....................  
+.................... void analizarTrama() 
+.................... { 
+0F3E:  SLEEP 
+....................      /* Analizamos si la trama esta completa */ 
+....................    int i; 
+....................    //Analizar si esta completa 
+....................    boolean inicioTrama = false; 
+*
+0C2E:  BCF    54.0
+....................    boolean finalTrama = false; 
+0C30:  BCF    54.1
+....................    for( i=0; i<=index;i++) 
+0C32:  CLRF   53
+0C34:  MOVF   53,W
+0C36:  SUBWF  52,W
+0C38:  BNC   0C6C
+....................    { 
+....................       if(dataRecived[i] == '<') 
+0C3A:  CLRF   03
+0C3C:  MOVF   53,W
+0C3E:  ADDLW  20
+0C40:  MOVWF  FE9
+0C42:  MOVLW  00
+0C44:  ADDWFC 03,W
+0C46:  MOVWF  FEA
+0C48:  MOVF   FEF,W
+0C4A:  SUBLW  3C
+0C4C:  BNZ   0C52
+....................       { 
+....................          inicioTrama = true; 
+0C4E:  BSF    54.0
+....................       } 
+....................       else if(dataRecived[i] == '>') 
+0C50:  BRA    0C68
+0C52:  CLRF   03
+0C54:  MOVF   53,W
+0C56:  ADDLW  20
+0C58:  MOVWF  FE9
+0C5A:  MOVLW  00
+0C5C:  ADDWFC 03,W
+0C5E:  MOVWF  FEA
+0C60:  MOVF   FEF,W
+0C62:  SUBLW  3E
+0C64:  BNZ   0C68
+....................       { 
+....................          finalTrama = true; 
+0C66:  BSF    54.1
+....................       } 
+....................    } 
+0C68:  INCF   53,F
+0C6A:  BRA    0C34
+....................     
+....................    /*LA TRAMA ESTA COMPLETA*/ 
+....................    if(inicioTrama == true && finalTrama == true) 
+0C6C:  BTFSS  54.0
+0C6E:  BRA    0C78
+0C70:  BTFSS  54.1
+0C72:  BRA    0C78
+....................    { 
+....................       analyzeTokens(); 
+0C74:  BRA    0662
+....................       limpiarTrama(); 
+0C76:  BRA    0C0C
+....................    } 
+.................... } 
+0C78:  GOTO   0D36 (RETURN)
+....................  
+.................... void analyzeTokens() 
+.................... { 
+....................   
+....................    /* 
+....................    *  s = segundos 
+....................    *  m = minutos 
+....................    *  h = horas 
+....................    *  D = dias 
+....................    *  M = mes 
+....................    *  A = año 
+....................    */ 
+....................    switch(dataRecived[1]) 
+....................    { 
+*
+0662:  MOVF   21,W
+0664:  XORLW  73
+0666:  BZ    0688
+0668:  XORLW  1E
+066A:  BTFSC  FD8.2
+066C:  BRA    077A
+066E:  XORLW  05
+0670:  BTFSC  FD8.2
+0672:  BRA    086C
+0674:  XORLW  2C
+0676:  BTFSC  FD8.2
+0678:  BRA    0960
+067A:  XORLW  09
+067C:  BTFSC  FD8.2
+067E:  BRA    0A54
+0680:  XORLW  0C
+0682:  BTFSC  FD8.2
+0684:  BRA    0B50
+0686:  BRA    0BEC
+....................       case 's': 
+....................        
+....................          if(isValidNumber(dataRecived[2]) && isValidNumber(dataRecived[3])) 
+0688:  MOVFF  22,61
+068C:  RCALL  041A
+068E:  MOVF   01,F
+0690:  BTFSC  FD8.2
+0692:  BRA    0760
+0694:  MOVFF  23,61
+0698:  RCALL  041A
+069A:  MOVF   01,F
+069C:  BZ    0760
+....................          { 
+....................             int unidad; 
+....................             int decena; 
+....................              
+....................             decena = CharToInt(dataRecived[2]) * 10; 
+069E:  MOVFF  22,61
+06A2:  RCALL  0438
+06A4:  MOVF   01,W
+06A6:  MULLW  0A
+06A8:  MOVFF  FF3,56
+....................             unidad = charToInt(dataRecived[3]); 
+06AC:  MOVFF  23,61
+06B0:  RCALL  0438
+06B2:  MOVFF  01,55
+....................             segundos = decena + unidad; 
+06B6:  MOVF   55,W
+06B8:  ADDWF  56,W
+06BA:  MOVWF  19
+....................             if(segundos<=59) 
+06BC:  MOVF   19,W
+06BE:  SUBLW  3B
+06C0:  BNC   071C
+....................             { 
+....................                 setTime(dias,mes,year,dow,horas,minutos,segundos); 
+06C2:  MOVFF  1C,61
+06C6:  MOVFF  1D,62
+06CA:  MOVFF  1E,63
+06CE:  MOVFF  1F,64
+06D2:  MOVFF  1B,65
+06D6:  MOVFF  1A,66
+06DA:  MOVFF  19,67
+06DE:  RCALL  04E4
+....................                printf("Segundos establecidos con %i  \r" , segundos); 
+06E0:  CLRF   61
+06E2:  MOVF   61,W
+06E4:  RCALL  00AA
+06E6:  INCF   61,F
+06E8:  MOVWF  00
+06EA:  MOVF   00,W
+06EC:  BTFSS  F9E.4
+06EE:  BRA    06EC
+06F0:  MOVWF  FAD
+06F2:  MOVLW  1A
+06F4:  SUBWF  61,W
+06F6:  BNZ   06E2
+06F8:  MOVFF  19,62
+06FC:  MOVLW  1F
+06FE:  MOVWF  63
+0700:  RCALL  0592
+0702:  MOVLW  20
+0704:  BTFSS  F9E.4
+0706:  BRA    0704
+0708:  MOVWF  FAD
+070A:  MOVLW  20
+070C:  BTFSS  F9E.4
+070E:  BRA    070C
+0710:  MOVWF  FAD
+0712:  MOVLW  0D
+0714:  BTFSS  F9E.4
+0716:  BRA    0714
+0718:  MOVWF  FAD
+....................             } 
+....................             else 
+071A:  BRA    075E
+....................             { 
+....................                 printf(" Segundos Invalidos   , recuerda que es de 00 a 59 \r"); 
+071C:  CLRF   61
+071E:  MOVF   61,W
+0720:  RCALL  00E4
+0722:  INCF   61,F
+0724:  MOVWF  00
+0726:  MOVF   00,W
+0728:  BTFSS  F9E.4
+072A:  BRA    0728
+072C:  MOVWF  FAD
+072E:  MOVLW  13
+0730:  SUBWF  61,W
+0732:  BNZ   071E
+0734:  MOVLW  03
+0736:  MOVWF  62
+0738:  MOVLW  20
+073A:  BTFSS  F9E.4
+073C:  BRA    073A
+073E:  MOVWF  FAD
+0740:  DECFSZ 62,F
+0742:  BRA    0738
+0744:  MOVLW  13
+0746:  MOVWF  63
+0748:  MOVF   63,W
+074A:  RCALL  00E4
+074C:  INCF   63,F
+074E:  MOVWF  00
+0750:  MOVF   00,W
+0752:  BTFSS  F9E.4
+0754:  BRA    0752
+0756:  MOVWF  FAD
+0758:  MOVLW  31
+075A:  SUBWF  63,W
+075C:  BNZ   0748
+....................             } 
+....................             
+....................              
+....................          } 
+....................          else 
+075E:  BRA    0778
+....................          { 
+....................             printf("Numero no valido \r"); 
+0760:  CLRF   61
+0762:  MOVF   61,W
+0764:  RCALL  0130
+0766:  INCF   61,F
+0768:  MOVWF  00
+076A:  MOVF   00,W
+076C:  BTFSS  F9E.4
+076E:  BRA    076C
+0770:  MOVWF  FAD
+0772:  MOVLW  12
+0774:  SUBWF  61,W
+0776:  BNZ   0762
+....................          } 
+....................           
+....................          break; 
+0778:  BRA    0C08
+....................           
+....................       case 'm': 
+....................        
+....................        
+....................        
+....................       if(isValidNumber(dataRecived[2]) && isValidNumber(dataRecived[3])) 
+077A:  MOVFF  22,61
+077E:  RCALL  041A
+0780:  MOVF   01,F
+0782:  BTFSC  FD8.2
+0784:  BRA    0852
+0786:  MOVFF  23,61
+078A:  RCALL  041A
+078C:  MOVF   01,F
+078E:  BZ    0852
+....................          { 
+....................             int unidad; 
+....................             int decena; 
+....................              
+....................             decena = CharToInt(dataRecived[2]) * 10; 
+0790:  MOVFF  22,61
+0794:  RCALL  0438
+0796:  MOVF   01,W
+0798:  MULLW  0A
+079A:  MOVFF  FF3,58
+....................             unidad = charToInt(dataRecived[3]); 
+079E:  MOVFF  23,61
+07A2:  RCALL  0438
+07A4:  MOVFF  01,57
+....................             minutos = decena + unidad; 
+07A8:  MOVF   57,W
+07AA:  ADDWF  58,W
+07AC:  MOVWF  1A
+....................             if(minutos<=59) 
+07AE:  MOVF   1A,W
+07B0:  SUBLW  3B
+07B2:  BNC   080E
+....................             { 
+....................                setTime(dias,mes,year,dow,horas,minutos,segundos); 
+07B4:  MOVFF  1C,61
+07B8:  MOVFF  1D,62
+07BC:  MOVFF  1E,63
+07C0:  MOVFF  1F,64
+07C4:  MOVFF  1B,65
+07C8:  MOVFF  1A,66
+07CC:  MOVFF  19,67
+07D0:  RCALL  04E4
+....................                printf("Minutos establecidos con %i  \r" , minutos); 
+07D2:  CLRF   61
+07D4:  MOVF   61,W
+07D6:  RCALL  015E
+07D8:  INCF   61,F
+07DA:  MOVWF  00
+07DC:  MOVF   00,W
+07DE:  BTFSS  F9E.4
+07E0:  BRA    07DE
+07E2:  MOVWF  FAD
+07E4:  MOVLW  19
+07E6:  SUBWF  61,W
+07E8:  BNZ   07D4
+07EA:  MOVFF  1A,62
+07EE:  MOVLW  1F
+07F0:  MOVWF  63
+07F2:  RCALL  0592
+07F4:  MOVLW  20
+07F6:  BTFSS  F9E.4
+07F8:  BRA    07F6
+07FA:  MOVWF  FAD
+07FC:  MOVLW  20
+07FE:  BTFSS  F9E.4
+0800:  BRA    07FE
+0802:  MOVWF  FAD
+0804:  MOVLW  0D
+0806:  BTFSS  F9E.4
+0808:  BRA    0806
+080A:  MOVWF  FAD
+....................             } 
+....................             else 
+080C:  BRA    0850
+....................             { 
+....................                 printf(" Minutos Invalidos   , recuerda que es de 00 a 59 \r"); 
+080E:  CLRF   61
+0810:  MOVF   61,W
+0812:  RCALL  0198
+0814:  INCF   61,F
+0816:  MOVWF  00
+0818:  MOVF   00,W
+081A:  BTFSS  F9E.4
+081C:  BRA    081A
+081E:  MOVWF  FAD
+0820:  MOVLW  12
+0822:  SUBWF  61,W
+0824:  BNZ   0810
+0826:  MOVLW  03
+0828:  MOVWF  62
+082A:  MOVLW  20
+082C:  BTFSS  F9E.4
+082E:  BRA    082C
+0830:  MOVWF  FAD
+0832:  DECFSZ 62,F
+0834:  BRA    082A
+0836:  MOVLW  12
+0838:  MOVWF  63
+083A:  MOVF   63,W
+083C:  RCALL  0198
+083E:  INCF   63,F
+0840:  MOVWF  00
+0842:  MOVF   00,W
+0844:  BTFSS  F9E.4
+0846:  BRA    0844
+0848:  MOVWF  FAD
+084A:  MOVLW  30
+084C:  SUBWF  63,W
+084E:  BNZ   083A
+....................             } 
+....................             
+....................              
+....................          } 
+....................          else 
+0850:  BRA    086A
+....................          { 
+....................             printf("Numero no valido \r"); 
+0852:  CLRF   61
+0854:  MOVF   61,W
+0856:  RCALL  0130
+0858:  INCF   61,F
+085A:  MOVWF  00
+085C:  MOVF   00,W
+085E:  BTFSS  F9E.4
+0860:  BRA    085E
+0862:  MOVWF  FAD
+0864:  MOVLW  12
+0866:  SUBWF  61,W
+0868:  BNZ   0854
+....................          } 
+....................           
+....................           
+....................          break; 
+086A:  BRA    0C08
+....................           
+....................           
+....................       case 'h': 
+....................        
+....................        
+....................        
+....................        
+....................       if(isValidNumber(dataRecived[2]) && isValidNumber(dataRecived[3])) 
+086C:  MOVFF  22,61
+0870:  RCALL  041A
+0872:  MOVF   01,F
+0874:  BTFSC  FD8.2
+0876:  BRA    0944
+0878:  MOVFF  23,61
+087C:  RCALL  041A
+087E:  MOVF   01,F
+0880:  BZ    0944
+....................          { 
+....................             int unidad; 
+....................             int decena; 
+....................              
+....................             decena = CharToInt(dataRecived[2]) * 10; 
+0882:  MOVFF  22,61
+0886:  RCALL  0438
+0888:  MOVF   01,W
+088A:  MULLW  0A
+088C:  MOVFF  FF3,5A
+....................             unidad = charToInt(dataRecived[3]); 
+0890:  MOVFF  23,61
+0894:  RCALL  0438
+0896:  MOVFF  01,59
+....................             horas = decena + unidad; 
+089A:  MOVF   59,W
+089C:  ADDWF  5A,W
+089E:  MOVWF  1B
+....................             if(horas<=23) 
+08A0:  MOVF   1B,W
+08A2:  SUBLW  17
+08A4:  BNC   0900
+....................             { 
+....................                setTime(dias,mes,year,dow,horas,minutos,segundos); 
+08A6:  MOVFF  1C,61
+08AA:  MOVFF  1D,62
+08AE:  MOVFF  1E,63
+08B2:  MOVFF  1F,64
+08B6:  MOVFF  1B,65
+08BA:  MOVFF  1A,66
+08BE:  MOVFF  19,67
+08C2:  RCALL  04E4
+....................                printf("Horas establecidos con %i  \r" , minutos); 
+08C4:  CLRF   61
+08C6:  MOVF   61,W
+08C8:  RCALL  01E4
+08CA:  INCF   61,F
+08CC:  MOVWF  00
+08CE:  MOVF   00,W
+08D0:  BTFSS  F9E.4
+08D2:  BRA    08D0
+08D4:  MOVWF  FAD
+08D6:  MOVLW  17
+08D8:  SUBWF  61,W
+08DA:  BNZ   08C6
+08DC:  MOVFF  1A,62
+08E0:  MOVLW  1F
+08E2:  MOVWF  63
+08E4:  RCALL  0592
+08E6:  MOVLW  20
+08E8:  BTFSS  F9E.4
+08EA:  BRA    08E8
+08EC:  MOVWF  FAD
+08EE:  MOVLW  20
+08F0:  BTFSS  F9E.4
+08F2:  BRA    08F0
+08F4:  MOVWF  FAD
+08F6:  MOVLW  0D
+08F8:  BTFSS  F9E.4
+08FA:  BRA    08F8
+08FC:  MOVWF  FAD
+....................             } 
+....................             else 
+08FE:  BRA    0942
+....................             { 
+....................                 printf(" Horas Invalidos   , recuerda que es de 00 a 23 \r"); 
+0900:  CLRF   61
+0902:  MOVF   61,W
+0904:  RCALL  021C
+0906:  INCF   61,F
+0908:  MOVWF  00
+090A:  MOVF   00,W
+090C:  BTFSS  F9E.4
+090E:  BRA    090C
+0910:  MOVWF  FAD
+0912:  MOVLW  10
+0914:  SUBWF  61,W
+0916:  BNZ   0902
+0918:  MOVLW  03
+091A:  MOVWF  62
+091C:  MOVLW  20
+091E:  BTFSS  F9E.4
+0920:  BRA    091E
+0922:  MOVWF  FAD
+0924:  DECFSZ 62,F
+0926:  BRA    091C
+0928:  MOVLW  10
+092A:  MOVWF  63
+092C:  MOVF   63,W
+092E:  RCALL  021C
+0930:  INCF   63,F
+0932:  MOVWF  00
+0934:  MOVF   00,W
+0936:  BTFSS  F9E.4
+0938:  BRA    0936
+093A:  MOVWF  FAD
+093C:  MOVLW  2E
+093E:  SUBWF  63,W
+0940:  BNZ   092C
+....................             } 
+....................             
+....................              
+....................          } 
+....................          else 
+0942:  BRA    095E
+....................          { 
+....................             printf("Numero no valido \r"); 
+0944:  CLRF   61
+0946:  MOVF   61,W
+0948:  CALL   0130
+094C:  INCF   61,F
+094E:  MOVWF  00
+0950:  MOVF   00,W
+0952:  BTFSS  F9E.4
+0954:  BRA    0952
+0956:  MOVWF  FAD
+0958:  MOVLW  12
+095A:  SUBWF  61,W
+095C:  BNZ   0946
+....................          } 
+....................       
+....................          break; 
+095E:  BRA    0C08
+....................           
+....................           
+....................       case 'D': 
+....................         if(isValidNumber(dataRecived[2]) && isValidNumber(dataRecived[3])) 
+0960:  MOVFF  22,61
+0964:  RCALL  041A
+0966:  MOVF   01,F
+0968:  BTFSC  FD8.2
+096A:  BRA    0A38
+096C:  MOVFF  23,61
+0970:  RCALL  041A
+0972:  MOVF   01,F
+0974:  BZ    0A38
+....................          { 
+....................             int unidad; 
+....................             int decena; 
+....................              
+....................             decena = CharToInt(dataRecived[2]) * 10; 
+0976:  MOVFF  22,61
+097A:  RCALL  0438
+097C:  MOVF   01,W
+097E:  MULLW  0A
+0980:  MOVFF  FF3,5C
+....................             unidad = charToInt(dataRecived[3]); 
+0984:  MOVFF  23,61
+0988:  RCALL  0438
+098A:  MOVFF  01,5B
+....................             dias = decena + unidad; 
+098E:  MOVF   5B,W
+0990:  ADDWF  5C,W
+0992:  MOVWF  1C
+....................             if(dias<=31) 
+0994:  MOVF   1C,W
+0996:  SUBLW  1F
+0998:  BNC   09F4
+....................             { 
+....................                setTime(dias,mes,year,dow,horas,minutos,segundos); 
+099A:  MOVFF  1C,61
+099E:  MOVFF  1D,62
+09A2:  MOVFF  1E,63
+09A6:  MOVFF  1F,64
+09AA:  MOVFF  1B,65
+09AE:  MOVFF  1A,66
+09B2:  MOVFF  19,67
+09B6:  RCALL  04E4
+....................                printf("Dias establecidos con %i  \r" , dias); 
+09B8:  CLRF   61
+09BA:  MOVF   61,W
+09BC:  RCALL  0266
+09BE:  INCF   61,F
+09C0:  MOVWF  00
+09C2:  MOVF   00,W
+09C4:  BTFSS  F9E.4
+09C6:  BRA    09C4
+09C8:  MOVWF  FAD
+09CA:  MOVLW  16
+09CC:  SUBWF  61,W
+09CE:  BNZ   09BA
+09D0:  MOVFF  1C,62
+09D4:  MOVLW  1F
+09D6:  MOVWF  63
+09D8:  RCALL  0592
+09DA:  MOVLW  20
+09DC:  BTFSS  F9E.4
+09DE:  BRA    09DC
+09E0:  MOVWF  FAD
+09E2:  MOVLW  20
+09E4:  BTFSS  F9E.4
+09E6:  BRA    09E4
+09E8:  MOVWF  FAD
+09EA:  MOVLW  0D
+09EC:  BTFSS  F9E.4
+09EE:  BRA    09EC
+09F0:  MOVWF  FAD
+....................             } 
+....................             else 
+09F2:  BRA    0A36
+....................             { 
+....................                 printf(" Dias Invalidos   , recuerda que es de 00 a 31 \r"); 
+09F4:  CLRF   61
+09F6:  MOVF   61,W
+09F8:  RCALL  029C
+09FA:  INCF   61,F
+09FC:  MOVWF  00
+09FE:  MOVF   00,W
+0A00:  BTFSS  F9E.4
+0A02:  BRA    0A00
+0A04:  MOVWF  FAD
+0A06:  MOVLW  0F
+0A08:  SUBWF  61,W
+0A0A:  BNZ   09F6
+0A0C:  MOVLW  03
+0A0E:  MOVWF  62
+0A10:  MOVLW  20
+0A12:  BTFSS  F9E.4
+0A14:  BRA    0A12
+0A16:  MOVWF  FAD
+0A18:  DECFSZ 62,F
+0A1A:  BRA    0A10
+0A1C:  MOVLW  0F
+0A1E:  MOVWF  63
+0A20:  MOVF   63,W
+0A22:  RCALL  029C
+0A24:  INCF   63,F
+0A26:  MOVWF  00
+0A28:  MOVF   00,W
+0A2A:  BTFSS  F9E.4
+0A2C:  BRA    0A2A
+0A2E:  MOVWF  FAD
+0A30:  MOVLW  2D
+0A32:  SUBWF  63,W
+0A34:  BNZ   0A20
+....................             } 
+....................             
+....................              
+....................          } 
+....................          else 
+0A36:  BRA    0A52
+....................          { 
+....................             printf("Numero no valido \r"); 
+0A38:  CLRF   61
+0A3A:  MOVF   61,W
+0A3C:  CALL   0130
+0A40:  INCF   61,F
+0A42:  MOVWF  00
+0A44:  MOVF   00,W
+0A46:  BTFSS  F9E.4
+0A48:  BRA    0A46
+0A4A:  MOVWF  FAD
+0A4C:  MOVLW  12
+0A4E:  SUBWF  61,W
+0A50:  BNZ   0A3A
+....................          } 
+....................  
+....................          break; 
+0A52:  BRA    0C08
+....................           
+....................       case 'M': 
+....................          if(isValidNumber(dataRecived[2]) && isValidNumber(dataRecived[3])) 
+0A54:  MOVFF  22,61
+0A58:  RCALL  041A
+0A5A:  MOVF   01,F
+0A5C:  BTFSC  FD8.2
+0A5E:  BRA    0B34
+0A60:  MOVFF  23,61
+0A64:  RCALL  041A
+0A66:  MOVF   01,F
+0A68:  BTFSC  FD8.2
+0A6A:  BRA    0B34
+....................          { 
+....................             int unidad; 
+....................             int decena; 
+....................              
+....................             decena = CharToInt(dataRecived[2]) * 10; 
+0A6C:  MOVFF  22,61
+0A70:  RCALL  0438
+0A72:  MOVF   01,W
+0A74:  MULLW  0A
+0A76:  MOVFF  FF3,5E
+....................             unidad = charToInt(dataRecived[3]); 
+0A7A:  MOVFF  23,61
+0A7E:  RCALL  0438
+0A80:  MOVFF  01,5D
+....................             mes = decena + unidad; 
+0A84:  MOVF   5D,W
+0A86:  ADDWF  5E,W
+0A88:  MOVWF  1D
+....................             if(mes>0 && mes<=12) 
+0A8A:  MOVF   1D,F
+0A8C:  BZ    0AEE
+0A8E:  MOVF   1D,W
+0A90:  SUBLW  0C
+0A92:  BNC   0AEE
+....................             { 
+....................                setTime(dias,mes,year,dow,horas,minutos,segundos); 
+0A94:  MOVFF  1C,61
+0A98:  MOVFF  1D,62
+0A9C:  MOVFF  1E,63
+0AA0:  MOVFF  1F,64
+0AA4:  MOVFF  1B,65
+0AA8:  MOVFF  1A,66
+0AAC:  MOVFF  19,67
+0AB0:  RCALL  04E4
+....................                printf("Mes establecidos con %i  \r" , mes); 
+0AB2:  CLRF   61
+0AB4:  MOVF   61,W
+0AB6:  RCALL  02E4
+0AB8:  INCF   61,F
+0ABA:  MOVWF  00
+0ABC:  MOVF   00,W
+0ABE:  BTFSS  F9E.4
+0AC0:  BRA    0ABE
+0AC2:  MOVWF  FAD
+0AC4:  MOVLW  15
+0AC6:  SUBWF  61,W
+0AC8:  BNZ   0AB4
+0ACA:  MOVFF  1D,62
+0ACE:  MOVLW  1F
+0AD0:  MOVWF  63
+0AD2:  RCALL  0592
+0AD4:  MOVLW  20
+0AD6:  BTFSS  F9E.4
+0AD8:  BRA    0AD6
+0ADA:  MOVWF  FAD
+0ADC:  MOVLW  20
+0ADE:  BTFSS  F9E.4
+0AE0:  BRA    0ADE
+0AE2:  MOVWF  FAD
+0AE4:  MOVLW  0D
+0AE6:  BTFSS  F9E.4
+0AE8:  BRA    0AE6
+0AEA:  MOVWF  FAD
+....................             } 
+....................             else 
+0AEC:  BRA    0B32
+....................             { 
+....................                 printf(" Mes Invalidos   , recuerda que es de 01 a 12 \r"); 
+0AEE:  CLRF   61
+0AF0:  MOVF   61,W
+0AF2:  RCALL  031A
+0AF4:  INCF   61,F
+0AF6:  MOVWF  00
+0AF8:  MOVF   00,W
+0AFA:  BTFSS  F9E.4
+0AFC:  BRA    0AFA
+0AFE:  MOVWF  FAD
+0B00:  MOVLW  0E
+0B02:  SUBWF  61,W
+0B04:  BNZ   0AF0
+0B06:  MOVLW  03
+0B08:  MOVWF  62
+0B0A:  MOVLW  20
+0B0C:  BTFSS  F9E.4
+0B0E:  BRA    0B0C
+0B10:  MOVWF  FAD
+0B12:  DECFSZ 62,F
+0B14:  BRA    0B0A
+0B16:  MOVLW  0E
+0B18:  MOVWF  63
+0B1A:  MOVF   63,W
+0B1C:  CALL   031A
+0B20:  INCF   63,F
+0B22:  MOVWF  00
+0B24:  MOVF   00,W
+0B26:  BTFSS  F9E.4
+0B28:  BRA    0B26
+0B2A:  MOVWF  FAD
+0B2C:  MOVLW  2C
+0B2E:  SUBWF  63,W
+0B30:  BNZ   0B1A
+....................             } 
+....................             
+....................              
+....................          } 
+....................          else 
+0B32:  BRA    0B4E
+....................          { 
+....................             printf("Numero no valido \r"); 
+0B34:  CLRF   61
+0B36:  MOVF   61,W
+0B38:  CALL   0130
+0B3C:  INCF   61,F
+0B3E:  MOVWF  00
+0B40:  MOVF   00,W
+0B42:  BTFSS  F9E.4
+0B44:  BRA    0B42
+0B46:  MOVWF  FAD
+0B48:  MOVLW  12
+0B4A:  SUBWF  61,W
+0B4C:  BNZ   0B36
+....................          } 
+....................          break; 
+0B4E:  BRA    0C08
+....................           
+....................         
+....................       case 'A': 
+....................          if(isValidNumber(dataRecived[2]) && isValidNumber(dataRecived[3]) && isValidNumber(dataRecived[4]) && isValidNumber(dataRecived[5])) 
+0B50:  MOVFF  22,61
+0B54:  RCALL  041A
+0B56:  MOVF   01,F
+0B58:  BZ    0BD0
+0B5A:  MOVFF  23,61
+0B5E:  RCALL  041A
+0B60:  MOVF   01,F
+0B62:  BZ    0BD0
+0B64:  MOVFF  24,61
+0B68:  RCALL  041A
+0B6A:  MOVF   01,F
+0B6C:  BZ    0BD0
+0B6E:  MOVFF  25,61
+0B72:  RCALL  041A
+0B74:  MOVF   01,F
+0B76:  BZ    0BD0
+....................          { 
+....................             int unidad; 
+....................             int decena; 
+....................           
+....................            
+....................             decena = CharToInt(dataRecived[4]) * 10; 
+0B78:  MOVFF  24,61
+0B7C:  RCALL  0438
+0B7E:  MOVF   01,W
+0B80:  MULLW  0A
+0B82:  MOVFF  FF3,60
+....................             unidad = charToInt(dataRecived[5]); 
+0B86:  MOVFF  25,61
+0B8A:  RCALL  0438
+0B8C:  MOVFF  01,5F
+....................              
+....................             year = decena + unidad; 
+0B90:  MOVF   5F,W
+0B92:  ADDWF  60,W
+0B94:  MOVWF  1E
+....................             
+....................             if(year>=0) 
+....................             { 
+....................                setTime(dias,mes,year,dow,horas,minutos,segundos); 
+0B96:  MOVFF  1C,61
+0B9A:  MOVFF  1D,62
+0B9E:  MOVFF  1E,63
+0BA2:  MOVFF  1F,64
+0BA6:  MOVFF  1B,65
+0BAA:  MOVFF  1A,66
+0BAE:  MOVFF  19,67
+0BB2:  RCALL  04E4
+....................                printf("Years establecidos  \r" ); 
+0BB4:  CLRF   61
+0BB6:  MOVF   61,W
+0BB8:  CALL   0362
+0BBC:  INCF   61,F
+0BBE:  MOVWF  00
+0BC0:  MOVF   00,W
+0BC2:  BTFSS  F9E.4
+0BC4:  BRA    0BC2
+0BC6:  MOVWF  FAD
+0BC8:  MOVLW  15
+0BCA:  SUBWF  61,W
+0BCC:  BNZ   0BB6
+....................             } 
+....................             else 
+....................             { 
+....................                 printf("No se soportan años antes de cristo \r"); 
+....................             } 
+....................             
+....................              
+....................          } 
+....................          else 
+0BCE:  BRA    0BEA
+....................          { 
+....................             printf("Numero no valido \r"); 
+0BD0:  CLRF   61
+0BD2:  MOVF   61,W
+0BD4:  CALL   0130
+0BD8:  INCF   61,F
+0BDA:  MOVWF  00
+0BDC:  MOVF   00,W
+0BDE:  BTFSS  F9E.4
+0BE0:  BRA    0BDE
+0BE2:  MOVWF  FAD
+0BE4:  MOVLW  12
+0BE6:  SUBWF  61,W
+0BE8:  BNZ   0BD2
+....................          } 
+....................          break; 
+0BEA:  BRA    0C08
+....................           
+....................          default: 
+....................           printf("Valor Invalido \r"); 
+0BEC:  CLRF   61
+0BEE:  MOVF   61,W
+0BF0:  CALL   0392
+0BF4:  INCF   61,F
+0BF6:  MOVWF  00
+0BF8:  MOVF   00,W
+0BFA:  BTFSS  F9E.4
+0BFC:  BRA    0BFA
+0BFE:  MOVWF  FAD
+0C00:  MOVLW  10
+0C02:  SUBWF  61,W
+0C04:  BNZ   0BEE
+....................          break; 
+0C06:  BRA    0C08
+....................    } 
+....................     
+....................     
+....................     
+....................     
+....................    
+....................     
+.................... } 
+0C08:  GOTO   0C76 (RETURN)
+....................  
+.................... void limpiarTrama() 
+.................... { 
+....................    int i; 
+....................    for(i=0; i<=index; i++) 
+0C0C:  CLRF   55
+0C0E:  MOVF   55,W
+0C10:  SUBWF  52,W
+0C12:  BNC   0C2A
+....................    { 
+....................       dataRecived[i] = ' '; 
+0C14:  CLRF   03
+0C16:  MOVF   55,W
+0C18:  ADDLW  20
+0C1A:  MOVWF  FE9
+0C1C:  MOVLW  00
+0C1E:  ADDWFC 03,W
+0C20:  MOVWF  FEA
+0C22:  MOVLW  20
+0C24:  MOVWF  FEF
+....................    } 
+0C26:  INCF   55,F
+0C28:  BRA    0C0E
+.................... } 
+0C2A:  GOTO   0C78 (RETURN)
+....................  
+.................... boolean isValidNumber(char ascii) 
+.................... { 
+....................    boolean valid; 
+....................    int number; 
+....................    valid=false; 
+*
+041A:  BCF    62.0
+....................    number= ascii; 
+041C:  MOVFF  61,63
+....................    if(number>=48 && number<=57) 
+0420:  MOVF   63,W
+0422:  SUBLW  2F
+0424:  BC    042E
+0426:  MOVF   63,W
+0428:  SUBLW  39
+042A:  BNC   042E
+....................    { 
+....................       valid = true; 
+042C:  BSF    62.0
+....................    } 
+....................     
+....................        
+....................    return valid; 
+042E:  MOVLW  00
+0430:  BTFSC  62.0
+0432:  MOVLW  01
+0434:  MOVWF  01
+.................... }   
+0436:  RETLW  00
+....................  
+....................  
+.................... int charToInt(char charNumber) 
+.................... { 
+....................    int numberInt; 
+....................    numberInt = charNumber; 
+0438:  MOVFF  61,62
+....................    numberInt -=48; 
+043C:  MOVLW  30
+043E:  SUBWF  62,F
+....................     
+....................    return numberInt; 
+0440:  MOVFF  62,01
+....................     
+.................... } 
+0444:  RETLW  00
+....................  
+....................  
+....................  
+....................  
+
+Configuration Fuses:
+   Word  1: 0100   XT NOIESO NOFCMEN RESERVED
+   Word  2: 1E18   NOBROWNOUT NOWDT BORV25 PUT WDT32768
+   Word  3: 8300   PBADEN CCP2C1 NOLPT1OSC MCLR RESERVED
+   Word  4: 0081   STVREN NODEBUG NOLVP NOXINST RESERVED
+   Word  5: C00F   NOPROTECT NOCPD NOCPB
+   Word  6: E00F   NOWRT NOWRTD NOWRTC NOWRTB
+   Word  7: 400F   NOEBTR NOEBTRB

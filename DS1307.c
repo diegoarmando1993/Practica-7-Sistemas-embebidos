@@ -6,11 +6,11 @@
 ///                 used when PIC loses power and DS1307 run from 3V BAT     /// 
 ///               - Disable squarewave output                                /// 
 ///                                                                          /// 
-/// ds1307_set_date_time(day,mth,year,dow,hour,min,sec)  Set the date/time   /// 
+/// setTime(day,mth,year,dow,hour,min,sec)  Set the date/time   /// 
 ///                                                                          /// 
-/// ds1307_get_date(day,mth,year,dow)               Get the date             /// 
+/// getDate(day,mth,year,dow)               Get the date             /// 
 ///                                                                          /// 
-/// ds1307_get_time(hr,min,sec)                     Get the time             /// 
+/// getTime(hr,min,sec)                     Get the time             /// 
 ///                                                                          /// 
 //////////////////////////////////////////////////////////////////////////////// 
 
@@ -19,12 +19,12 @@
 
 #use i2c(master, sda=RTC_SDA, scl=RTC_SCL) 
 
-BYTE bin2bcd(BYTE binary_value); 
-BYTE bcd2bin(BYTE bcd_value); 
+int bin2bcd(int); 
+int bcd2bin(int); 
 
-void ds1307_init(void) 
+void init(void) 
 { 
-   BYTE seconds = 0; 
+   int seconds = 0; 
 
    i2c_start(); 
    i2c_write(0xD0);      // WR to RTC 
@@ -49,7 +49,7 @@ void ds1307_init(void)
 
 } 
 
-void ds1307_set_date_time(BYTE day, BYTE mth, BYTE year, BYTE dow, BYTE hr, BYTE min, BYTE sec) 
+void setTime(int day, int mth, int year, int dow, int hr, int min, int sec) 
 { 
   sec &= 0x7F; 
   hr &= 0x3F; 
@@ -68,7 +68,7 @@ void ds1307_set_date_time(BYTE day, BYTE mth, BYTE year, BYTE dow, BYTE hr, BYTE
   i2c_stop(); 
 } 
 
-void ds1307_get_date(BYTE &day, BYTE &mth, BYTE &year, BYTE &dow) 
+void getDate(int &day, int &mth, int &year, int &dow) 
 { 
   i2c_start(); 
   i2c_write(0xD0); 
@@ -82,7 +82,7 @@ void ds1307_get_date(BYTE &day, BYTE &mth, BYTE &year, BYTE &dow)
   i2c_stop(); 
 } 
 
-void ds1307_get_time(BYTE &hr, BYTE &min, BYTE &sec) 
+void getTime(int &hr, int &min, int &sec) 
 { 
   i2c_start(); 
   i2c_write(0xD0); 
@@ -96,46 +96,34 @@ void ds1307_get_time(BYTE &hr, BYTE &min, BYTE &sec)
 
 } 
 
-BYTE bin2bcd(BYTE binary_value) 
+int bin2bcd(int binary_value) 
 { 
-  BYTE temp; 
-  BYTE retval; 
-
-  temp = binary_value; 
-  retval = 0; 
-
-  while(1) 
-  { 
-    // Get the tens digit by doing multiple subtraction 
-    // of 10 from the binary value. 
-    if(temp >= 10) 
-    { 
-      temp -= 10; 
-      retval += 0x10; 
-    } 
-    else // Get the ones digit by adding the remainder. 
-    { 
-      retval += temp; 
-      break; 
-    } 
-  } 
-
-  return(retval); 
+   int decena;
+   int unidad;
+   int bdc = 0;
+   decena = binary_value/10;
+   unidad = binary_value - (decena*10);
+   bdc=decena;
+   bdc<<=4;
+   bdc = bdc | unidad;
+   return bdc;
+   
 } 
 
 
 // Input range - 00 to 99. 
-BYTE bcd2bin(BYTE bcd_value) 
+int bcd2bin(int bcd) 
 { 
-  BYTE temp; 
-
-  temp = bcd_value; 
-  // Shifting upper digit right by 1 is same as multiplying by 8. 
-  temp >>= 1; 
-  // Isolate the bits for the upper digit. 
-  temp &= 0x78; 
-
-  // Now return: (Tens * 8) + (Tens * 2) + Ones 
-
-  return(temp + (temp >> 2) + (bcd_value & 0x0f)); 
+   int decena;
+   int unidad;
+   int binary;
+   
+   decena = bcd;
+   decena >>=4;
+   decena = decena * 10;
+   
+   unidad = bcd & 0x0f;
+   
+   binary = unidad + decena;
+   return binary;
 } 
